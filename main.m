@@ -132,3 +132,23 @@ title('Minimum obtenu en fonction du point initial')
 xlabel('x')
 ylabel('y')
 legend('Fonction oscillante','Minima obtenu')
+
+%% Exercice 2 : Gradient à pas optimal
+% ==> Question 1 :
+% Validation des descente de gradient à pas optimal : on sait que pour la
+% fonction f on converge en une itération exactement et on retrouve ce
+% comportement :
+epsil = 1e-7;
+nitmax = 1000;
+findic = 2;
+x0 = [5 3 64 15 -135];
+disp('Avec le Gradient à pas optimal')
+[x,Jx,GJx,nit] = GOPT(@J,@GJ,x0,epsil,nitmax,findic);
+disp(['Point de départ au hasard    : ' num2str(x0)])
+disp(['Minimum obtenu               : ' num2str(x)])
+disp(['En exactement ' num2str(nit) ' itération(s)'])
+disp('Avec le Gradient Conjugué de Dai Yuand à pas optimal')
+[x,Jx,GJx,nit] = GCDYOPT(@J,@GJ,x0,epsil,nitmax,findic);
+disp(['Point de départ au hasard    : ' num2str(x0)])
+disp(['Minimum obtenu               : ' num2str(x)])
+disp(['En exactement ' num2str(nit) ' itération(s)'])
