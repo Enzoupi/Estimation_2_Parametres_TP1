@@ -1,9 +1,13 @@
-function [x,Jx,GJx,nit,counter] = GCDYOPT(J,GJ,x0,epsil,nitmax,findic)
+function [xres,Jx,GJx,nit,counter] = GCDYOPT_allx(J,GJ,x0,epsil,nitmax,findic)
 %% Paramètres divers
 error = 10000;      % Initialisation d'une valeur élévée pour l'erreur
 nit = 0;            % Nombre d'itérations
 i = 1:length(x0);   % Comodité pour réaliser les calculs
 counter = 0;        % Compteur dévaluation de la fonction et de son gradient
+
+% Vecteur pour conserver tous les x en sortie de l'algo
+xres=zeros(nitmax,length(x0));
+xres(1,:) = x0;
 
 
 %% Première étape : gradient à pas optimal normal
@@ -29,6 +33,7 @@ end
 x = x0 + pas .* dk;
 error = max(abs(x-solex));
 nit = nit +1;
+xres(nit +1,:)=x;
 
 dkm1 = dk;
 xm1 = x0;
@@ -54,8 +59,12 @@ while (error > epsil) && (nit < nitmax)
     dkm1 = dk;
     error = max(abs(x-solex));
     nit = nit +1;
+    xres(nit +1,:)=x;
 end
 Jx = J(x,findic);
 GJx = GJ(x,findic);
 counter = counter +2;
 
+xres = xres(1:nit+1,:);
+
+end
