@@ -15,6 +15,5 @@ elseif (findic == 4)
     if length(x) ~= 2
         disp('X does not have the proper size for Rosenbrock')
     end
-    resJ=(1-x(1))^2+100*(x(2)-x(1)^2)^2;
+    resJ=(1-x(1)).^2 + 100.*(x(2)-x(1).^2).^2;
 end
-

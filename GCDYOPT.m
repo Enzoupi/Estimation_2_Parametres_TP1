@@ -20,6 +20,9 @@ elseif findic == 2
     c = sum(1./i .* dk .* dk);
     pas = -b/(2*c);
     solex = i;
+elseif findic == 4
+    solex = [1 1];
+    pas = (1-x0(1))/(dk(1));
 else
     disp('---------------------------------------------------------------')
     disp('La fonction demandée nest pas encore implémentée !!')
@@ -48,6 +51,8 @@ while (error > epsil) && (nit < nitmax)
         b = 2 * sum(1./i .* (x0-i) .* dk);
         c = sum(1./i.* dk .* dk);
         pas = -b/(2*c);
+    elseif findic == 4
+        pas = (1-x0(1))/(dk(1));
     end
     xm1 = x;
     x = x + pas .* dk;

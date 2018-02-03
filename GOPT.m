@@ -9,6 +9,8 @@ counter = 0; % compteur d'évaluation de la fonction et de son gradient
 % solution exacte pour calcul de l'erreur
 if findic == 1 || findic == 2
     solex = i;
+elseif findic == 4
+    solex = [1 1];
 end
 
 %% On itère le processus jusqu'à se rapprocher de la solution
@@ -22,6 +24,8 @@ while (error > epsil) && (nit < nitmax)
         b = 2*sum( 1./i .* (x0-i) .* dk);
         c = sum(1./i .* dk .* dk);
         pas = -b/(2*c);
+    elseif findic == 4
+        pas = (1-x0(1))/(dk(1));
     else
         disp('---------------------------------------------------------------')
         disp('La fonction demandée nest pas encore implémentée !!')

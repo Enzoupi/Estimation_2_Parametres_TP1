@@ -1,4 +1,4 @@
-clear all
+clear variables
 close all
 %% Zone de commentaire
 % Programme principal pour le TP1 d'estimation de paramètres
@@ -157,10 +157,10 @@ disp(['Point de départ au hasard    : ' num2str(x0)])
 disp(['Minimum obtenu               : ' num2str(x)])
 disp(['En exactement ' num2str(nit) ' itération(s)'])
 
-% Comparaison avec GCST pour n=2 et pas = 0.5
+%% Comparaison avec GCST pour n=2 et pas = 0.5
 epsil = 1e-7;
 nitmax = 1000;
-findic = 2;
+findic = 1;
 x0 = [15 -15];
 pas = 0.5;
 [resgopt,Jx,GJx,nit_gopt,nbeval] = GOPT(@J,@GJ,x0,epsil,nitmax,findic);
@@ -172,7 +172,7 @@ disp(['Nombre d itérations pour GOPT : ' num2str(nit_gopt)])
 disp(['Nombre d itérations pour GCDYOPT : ' num2str(nit_gcdyopt)])
 
 
-% ==> Question 2 :
+%% ==> Question 2 :
 disp('Exercice 2 Question 2:')
 % Pour f
 nn = [1,2,5,10,100,1000,10000];
@@ -214,34 +214,53 @@ legend('Gradient Optimal','Gradient Conjugué DY Optimal')
 xlabel('log10(n)')
 ylabel('log10 nombre d évaluation de J et GJ')
 
-% représentation des trajets
+%% représentation des trajets
 epsil = 1e-7;
 nitmax = 1000;
 findic = 2;
-x0 = [5 -5];
-pas = 0.5;
+x0 = [2.5 -2.5];
 [resgopt,Jx,GJx,nit_gopt,nbeval] = GOPT_allx(@J,@GJ,x0,epsil,nitmax,findic);
 [resgcdyopt,Jx,GJx,nit,nbeval] = GCDYOPT_allx(@J,@GJ,x0,epsil,nitmax,findic);
 
-figure
-subplot(2,1,1)
-hold on
-plot(resgopt(:,1),resgopt(:,2))
-plot(resgcdyopt(:,1),resgcdyopt(:,2))
-axis([-1 6 -6 6])
-plot(1,2,'ro')
-text(1.1,2.1,'Minimum de la fonction en [1 2]')
-xlabel('x')
-ylabel('y')
-legend('Gradient optimal','Gradient Conjugué DY Optimal')
 
-subplot(2,1,2)
+[X,Y]=meshgrid(-3:0.05:3);
+Z=(X-1).^2+1/2.*(Y-2).^2
+figure
 hold on
-plot(resgopt(:,1),resgopt(:,2))
-plot(resgcdyopt(:,1),resgcdyopt(:,2))
-axis([0.99 1.01 1.99 2.01])
-plot(1,2,'ro')
-text(1.1,2.1,'Minimum de la fonction en [1 2]')
+plot3(resgopt(:,1),resgopt(:,2),(resgopt(:,1)-1).^2+1/2.*(resgopt(:,2)-2).^2,'-or')
+plot3(resgcdyopt(:,1),resgcdyopt(:,2),(resgcdyopt(:,1)-1).^2+1/2.*(resgcdyopt(:,2)-2).^2,'-oy')
+surf(X,Y,Z, 'edgecolor','none')
+legend('Gradient optimal','Gradient Conjugué DY Optimal')
 xlabel('x')
 ylabel('y')
-legend('Gradient optimal','Gradient Conjugué DY Optimal')
+
+%% fonctions implémentées dans matlab
+% fonctions transparentes f et g
+func_g = @(x) J(x,2);
+func_f = @(x) J(x,1);
+func_s = @(x) J(x,3);
+func_rosen = @(x) J(x,4);
+options = optimset('TolX',1e-7,'Display','iter','MaxIter',10000);
+[xg,~,~,output_g] = fminsearch(func_g,[15,-15],options)
+[xf,~,~,output_f] = fminsearch(func_f,[15,-15],options)
+[xs,~,~,output_s] = fminsearch(func_s,[0.8])
+[xrosen,~,~,output_rosen] = fminsearch(func_rosen,[0.8,3])
+
+
+% Test avec n=100
+x0 = zeros(1,1e2);
+[xg_big,~,~,output_g_big] = fminsearch(func_g,x0,options)
+
+%% Minimisation de la fonction de Rosenbrock
+disp('Minimisation de la fonction de Rosenbrock')
+% Paramètres
+x0=[1.2 0.8];
+epsil = 1e-7;
+nitmax = 100000;
+findic = 4;
+pas = 1e-7;
+% calculs de minimisation
+%[resgopt,~,~,nit_gopt,nbeval]   =   GOPT(     @J,@GJ,x0,      epsil,nitmax,findic);
+%[resgcdyopt,~,~,nit,nbeval]     =   GCDYOPT(  @J,@GJ,x0,      epsil,nitmax,findic);
+[resgcst,~,~,nit_gcst]             =   GCST(          @J,@GJ,x0,pas,  epsil,nitmax,findic);
+[resgcdycst,~,~,nit_gcdycst]       =   GCDYCST(       @J,@GJ,x0,pas,  epsil,nitmax,findic);
