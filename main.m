@@ -134,21 +134,39 @@ ylabel('y')
 legend('Fonction oscillante','Minima obtenu')
 
 %% Exercice 2 : Gradient à pas optimal
+disp('---------------------------------------------------------------')
+disp('Exercice 2')
+disp('---------------------------------------------------------------')
 % ==> Question 1 :
+
 % Validation des descente de gradient à pas optimal : on sait que pour la
 % fonction f on converge en une itération exactement et on retrouve ce
 % comportement :
 epsil = 1e-7;
 nitmax = 1000;
-findic = 2;
+findic = 1;
 x0 = [5 3 64 15 -135];
 disp('Avec le Gradient à pas optimal')
 [x,Jx,GJx,nit] = GOPT(@J,@GJ,x0,epsil,nitmax,findic);
 disp(['Point de départ au hasard    : ' num2str(x0)])
 disp(['Minimum obtenu               : ' num2str(x)])
 disp(['En exactement ' num2str(nit) ' itération(s)'])
-disp('Avec le Gradient Conjugué de Dai Yuand à pas optimal')
+disp('Avec le Gradient Conjugué de Dai Yuan à pas optimal')
 [x,Jx,GJx,nit] = GCDYOPT(@J,@GJ,x0,epsil,nitmax,findic);
 disp(['Point de départ au hasard    : ' num2str(x0)])
 disp(['Minimum obtenu               : ' num2str(x)])
 disp(['En exactement ' num2str(nit) ' itération(s)'])
+
+% Comparaison avec GCST pour n=2 et pas = 0.5
+epsil = 1e-7;
+nitmax = 1000;
+findic = 2;
+x0 = [15 -15];
+pas = 0.5;
+[resgopt,Jx,GJx,nit_gopt] = GOPT(@J,@GJ,x0,epsil,nitmax,findic);
+[resgcst,~,~,nit_gcst]=GCST(@J,@GJ,x0,pas,epsil,nitmax,findic);
+[resgcdyopt,~,~,nit_gcdyopt] = GCDYOPT(@J,@GJ,x0,epsil,nitmax,findic);
+disp(['Comparaison sur la fonction g pour n = 2 avec une tolerance de ' num2str(epsil)])
+disp(['Nombre d itérations pour GCST : ' num2str(nit_gcst)])
+disp(['Nombre d itérations pour GOPT : ' num2str(nit_gopt)])
+disp(['Nombre d itérations pour GCDYOPT : ' num2str(nit_gcdyopt)])
