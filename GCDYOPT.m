@@ -37,9 +37,10 @@ nit = nit +1;
 
 dkm1 = dk;
 xm1 = x0;
+GJx = -dk;
 
 %% Gradient conjugué de Dai Yuan
-while (error > epsil) && (nit < nitmax) && (abs(sum(x-xm1)) > 1e-8)
+while (error > epsil) && (nit < nitmax) && (norm(GJx) > epsil)
     GJx = GJ(x,findic);
     counter = counter +1;
     Bkm1 = sum( GJx .* GJx ) / ( sum(dkm1 .* (GJx-GJ(xm1,findic)) ) );
@@ -50,7 +51,7 @@ while (error > epsil) && (nit < nitmax) && (abs(sum(x-xm1)) > 1e-8)
         c = sum( dk .* dk );
         pas = -b/(2*c);
     elseif findic == 2
-        b = 2*sum( 1./i .* (x0-i) .* dk);
+        b = sum( 1./i .* 2 .* (x-i) .* dk);
         c = sum(1./i .* dk .* dk);
         pas = -b/(2*c);
     elseif findic == 4
@@ -60,8 +61,9 @@ while (error > epsil) && (nit < nitmax) && (abs(sum(x-xm1)) > 1e-8)
     end
     xm1 = x;
     x = x + pas .* dk;
+    
     dkm1 = dk;
-    error = max(abs(x-solex));
+    error = max(abs(x-solex))
     nit = nit +1;
 end
 Jx = J(x,findic);
