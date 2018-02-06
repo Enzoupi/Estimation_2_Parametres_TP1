@@ -22,6 +22,8 @@ elseif findic == 2
     solex = i;
 elseif findic == 4
     solex = [1 1];
+    % FAUX !!!
+    disp('Attention : le calcul du pas optimal n est pas bon !')
     pas = (1-x0(1))/(dk(1));
 else
     disp('---------------------------------------------------------------')
@@ -37,7 +39,7 @@ dkm1 = dk;
 xm1 = x0;
 
 %% Gradient conjugué de Dai Yuan
-while (error > epsil) && (nit < nitmax)
+while (error > epsil) && (nit < nitmax) && (abs(sum(x-xm1)) > 1e-8)
     GJx = GJ(x,findic);
     counter = counter +1;
     Bkm1 = sum( GJx .* GJx ) / ( sum(dkm1 .* (GJx-GJ(xm1,findic)) ) );
@@ -48,10 +50,12 @@ while (error > epsil) && (nit < nitmax)
         c = sum( dk .* dk );
         pas = -b/(2*c);
     elseif findic == 2
-        b = 2 * sum(1./i .* (x0-i) .* dk);
-        c = sum(1./i.* dk .* dk);
+        b = 2*sum( 1./i .* (x0-i) .* dk);
+        c = sum(1./i .* dk .* dk);
         pas = -b/(2*c);
     elseif findic == 4
+        % FAUX !!!
+        disp('Attention : le calcul du pas optimal n est pas bon !')
         pas = (1-x0(1))/(dk(1));
     end
     xm1 = x;

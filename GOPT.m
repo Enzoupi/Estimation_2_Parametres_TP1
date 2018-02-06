@@ -25,6 +25,8 @@ while (error > epsil) && (nit < nitmax)
         c = sum(1./i .* dk .* dk);
         pas = -b/(2*c);
     elseif findic == 4
+        % FAUX !!!
+        disp('Attention : le calcul du pas optimal n est pas bon !')
         pas = (1-x0(1))/(dk(1));
     else
         disp('---------------------------------------------------------------')

@@ -175,8 +175,10 @@ disp(['Nombre d itérations pour GCDYOPT : ' num2str(nit_gcdyopt)])
 %% ==> Question 2 :
 disp('Exercice 2 Question 2:')
 % Pour f
-nn = [1,2,5,10,100,1000,10000];
+%nn = [1,2,5,10,100,1000,10000];
+nn = [1,2,3,4,5,6,7,8,9,10,12,15,17,20,25,50,75,100,250,500,750,1000,10000];
 epsil = 1e-7;
+nitmax = 10000;
 findic =2;
 err_gopt = zeros(size(nn));
 err_gcdyopt = zeros(size(nn));
@@ -194,17 +196,26 @@ for i=1:length(nn)
     err_gcdyopt(i) = max(abs(resgcdyopt-solex));
 end
 
-% 
-% figure
-% hold on
-% subplot(2,1,1)
-% plot(nn,log10(err_gcdyopt))
-% plot(nn,log10(err_gopt))
-% legend('Gradient Conjugué DY Optimal','Gradient Optimal')
-% subplot(2,1,2)
-% plot(nn,nit_gcdyopt)
-% plot(nn,nit_gopt)
-% legend('Gradient Conjugué DY Optimal','Gradient Optimal')
+err_gcdyopt(err_gcdyopt==0)=1e-17;
+err_gopt(err_gopt==0)=1e-17;
+figure
+subplot(2,1,1)
+hold on
+plot(log10(nn),log10(err_gcdyopt),'-+')
+plot(log10(nn),log10(err_gopt),'-+')
+plot(log10(nn),ones(1,length(nn)).*-7)
+xlabel('log10 de la dimension de l espace')
+ylabel('log10 de l erreur')
+legend('Gradient Conjugué DY Optimal','Gradient Optimal','Précision demandée','Location','northwest')
+subplot(2,1,2)
+hold on
+plot(log10(nn),log10(nit_gcdyopt),'-+')
+plot(log10(nn),log10(nit_gopt),'-+')
+xlabel('log10 de la dimension de l espace')
+ylabel('log10 du nombre d itérations')
+legend('Gradient Conjugué DY Optimal','Gradient Optimal')
+
+
 
 figure
 hold on
