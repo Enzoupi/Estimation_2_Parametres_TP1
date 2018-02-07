@@ -219,9 +219,9 @@ legend('Gradient Conjugué DY Optimal','Gradient Optimal')
 
 figure
 hold on
-plot(log10(nn),log10(nbeval_gopt))
 plot(log10(nn),log10(nbeval_gcdyopt))
-legend('Gradient Optimal','Gradient Conjugué DY Optimal')
+plot(log10(nn),log10(nbeval_gopt))
+legend('Gradient Conjugué DY Optimal','Gradient Optimal','Location','Southeast')
 xlabel('log10(n)')
 ylabel('log10 nombre d évaluation de J et GJ')
 
@@ -246,32 +246,78 @@ xlabel('x')
 ylabel('y')
 
 %% fonctions implémentées dans matlab
-% fonctions transparentes f et g
-func_g = @(x) J(x,2);
+% fonctions transparentes pour définir au bon format f,g,s et h
 func_f = @(x) J(x,1);
+func_g = @(x) J(x,2);
 func_s = @(x) J(x,3);
 func_rosen = @(x) J(x,4);
-options = optimset('TolX',1e-7,'Display','iter','MaxIter',10000);
+options = optimset('TolX',1e-7,'Display','iter','MaxIter',50000,'MaxFunEvals',50000);
 [xg,~,~,output_g] = fminsearch(func_g,[15,-15],options)
 [xf,~,~,output_f] = fminsearch(func_f,[15,-15],options)
-[xs,~,~,output_s] = fminsearch(func_s,[0.8])
-[xrosen,~,~,output_rosen] = fminsearch(func_rosen,[0.8,3])
-
-
-% Test avec n=100
-x0 = zeros(1,1e2);
-[xg_big,~,~,output_g_big] = fminsearch(func_g,x0,options)
-
+[xs,~,~,output_s] = fminsearch(func_s,[15],options)
+[xrosen,~,~,output_rosen] = fminsearch(func_rosen,[15,35],options)
+% Affichage des résultats
+disp('--------------------------------------------------------------------')
+disp('Exercice 3')
+disp('--------------------------------------------------------------------')
+disp('Résultats de minimisation via fminsearch sur f')
+disp(['Minimum : ' num2str(xf)])
+disp(['Erreur  : ' num2str(max(abs(xf-[1 2])))])
+disp(['Nombre d itérations : ' num2str(output_f.iterations)])
+disp('Résultats de minimisation via fminsearch sur g')
+disp(['Minimum : ' num2str(xg)])
+disp(['Erreur  : ' num2str(max(abs(xg-[1 2])))])
+disp(['Nombre d itérations : ' num2str(output_g.iterations)])
+disp('Résultats de minimisation via fminsearch sur s')
+disp(['Minimum : ' num2str(xs)])
+disp(['Erreur  : ' num2str(max(abs(xs-1)))])
+disp(['Nombre d itérations : ' num2str(output_s.iterations)])
+% 
+% 
+% % Test avec n=100
+% x0 = zeros(1,10);
+% [xg_big,~,~,output_g_big] = fminsearch(func_f,x0,options)
 %% Minimisation de la fonction de Rosenbrock
 disp('Minimisation de la fonction de Rosenbrock')
 % Paramètres
-x0=[1.2 0.8];
+x0=[0.8 1.5];
 epsil = 1e-7;
 nitmax = 100000;
 findic = 4;
-pas = 1e-7;
+pas = 1e-4;
 % calculs de minimisation
 %[resgopt,~,~,nit_gopt,nbeval]   =   GOPT(     @J,@GJ,x0,      epsil,nitmax,findic);
 %[resgcdyopt,~,~,nit,nbeval]     =   GCDYOPT(  @J,@GJ,x0,      epsil,nitmax,findic);
 [resgcst,~,~,nit_gcst]             =   GCST(          @J,@GJ,x0,pas,  epsil,nitmax,findic);
 [resgcdycst,~,~,nit_gcdycst]       =   GCDYCST(       @J,@GJ,x0,pas,  epsil,nitmax,findic);
+
+findic = 4;
+x0 = [0.8 1.5];
+solex = [1,1];
+pas = [1e-5 5e-5 1e-4 5e-4 1e-3 5e-3 1e-2 1e-1];
+errgcdy = zeros(1,length(pas));
+errgcst = zeros(1,length(pas));
+nitgcdy = zeros(1,length(pas));
+nitg = zeros(1,length(pas));
+for i=1:length(pas)
+    [resgcdy,~,~,nitgcdy(i)]=GCDYCST(@J,@GJ,x0,pas(i),epsil,nitmax,findic);
+    [resgcst,~,~,nitg(i)]=GCST(@J,@GJ,x0,pas(i),epsil,nitmax,findic);
+    errgcdy(i)=max(abs(solex-resgcdy)/solex);
+    errgcst(i)=max(abs(solex-resgcst)/solex); 
+end
+figure
+hold on
+plot(log10(pas),log10(nitgcdy),'-+')
+plot(log10(pas),log10(nitg),'-+')
+title('Comparaison des convergences pour deux versions de la descente du gradient')
+xlabel('log10 du pas')
+ylabel('log10 du nombre d iterations avant convergence')
+legend('Gradient conjugué (DY)','Gradient à pas constant')
+figure
+hold on
+plot(log10(pas),log10(errgcdy),'-+')
+plot(log10(pas),log10(errgcst),'-+')
+title('Ecart relatif maximum')
+xlabel('log10 du pas')
+ylabel('log10 de l écart relatif')
+legend('Gradient conjugué (DY)','Gradient à pas constant')
